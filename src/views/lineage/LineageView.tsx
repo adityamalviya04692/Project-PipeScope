@@ -69,15 +69,17 @@ export default function LineageView({ result, files, dialect, busy, onFilesChang
           ]}
         />
       </div>
-      {tab === 'graph' && (
-        <div className="lineage-layout">
-          <LineageGraph ix={ix} selection={selection} onSelect={setSelection} />
-          <SidePanel ix={ix} selection={selection} onSelect={setSelection} />
-        </div>
-      )}
-      {tab === 'tables' && <Tables ix={ix} issues={issues} onOpen={open} />}
-      {tab === 'problems' && <Problems ix={ix} issues={issues} onOpen={open} />}
-      {tab === 'workspace' && <Workspace files={files} dialect={dialect} busy={busy} onChange={onFilesChange} onAnalyze={onAnalyze} />}
+      <div className="view-panel" key={tab}>
+        {tab === 'graph' && (
+          <div className="lineage-layout">
+            <LineageGraph ix={ix} selection={selection} onSelect={setSelection} />
+            <SidePanel ix={ix} selection={selection} onSelect={setSelection} />
+          </div>
+        )}
+        {tab === 'tables' && <Tables ix={ix} issues={issues} onOpen={open} />}
+        {tab === 'problems' && <Problems ix={ix} issues={issues} onOpen={open} />}
+        {tab === 'workspace' && <Workspace files={files} dialect={dialect} busy={busy} onChange={onFilesChange} onAnalyze={onAnalyze} />}
+      </div>
     </div>
   );
 }

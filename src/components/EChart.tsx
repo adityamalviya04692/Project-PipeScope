@@ -90,5 +90,5 @@ export default function EChart({ option, height = 280, onClick }: { option: Opti
       chart.dispose();
     };
   }, [option]);
-  return <div ref={el} style={{ width: '100%', height, cursor: onClick ? 'pointer' : undefined }} />;
+  return <div className="chart-shell" ref={el} style={{ width: '100%', height, cursor: onClick ? 'pointer' : undefined }} />;
 }

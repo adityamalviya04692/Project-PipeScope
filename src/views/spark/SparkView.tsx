@@ -65,13 +65,15 @@ export default function SparkView({ runs, onSwap }: { runs: Analysis[]; onSwap: 
       <div className="subtabs">
         <Segmented label="Spark Doctor sections" value={tab} onChange={setTab} options={tabs} />
       </div>
-      {tab === 'overview' && <Overview a={a} onOpenStage={openStage} onOpenSql={openSql} />}
-      {tab === 'timeline' && <Timeline a={a} onOpenStage={openStage} />}
-      {tab === 'stages' && <Stages a={a} selected={stageKey} onSelect={setStageKey} />}
-      {tab === 'dag' && <StageDag a={a} sqlId={sqlId} onSelectSql={setSqlId} onOpenStage={openStage} />}
-      {tab === 'plans' && <Plans a={a} sqlId={sqlId} onSelect={setSqlId} onOpenStage={openStage} />}
-      {tab === 'config' && <Config a={a} />}
-      {tab === 'compare' && runs.length === 2 && <Compare runs={[runs[0], runs[1]]} onSwap={onSwap} />}
+      <div className="view-panel" key={`${tab}-${runIdx}`}>
+        {tab === 'overview' && <Overview a={a} onOpenStage={openStage} onOpenSql={openSql} />}
+        {tab === 'timeline' && <Timeline a={a} onOpenStage={openStage} />}
+        {tab === 'stages' && <Stages a={a} selected={stageKey} onSelect={setStageKey} />}
+        {tab === 'dag' && <StageDag a={a} sqlId={sqlId} onSelectSql={setSqlId} onOpenStage={openStage} />}
+        {tab === 'plans' && <Plans a={a} sqlId={sqlId} onSelect={setSqlId} onOpenStage={openStage} />}
+        {tab === 'config' && <Config a={a} />}
+        {tab === 'compare' && runs.length === 2 && <Compare runs={[runs[0], runs[1]]} onSwap={onSwap} />}
+      </div>
     </div>
   );
 }

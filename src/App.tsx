@@ -182,27 +182,29 @@ export default function App() {
       </header>
 
       <main className="main">
-        {mode === 'home' && <Landing onFiles={onFiles} onDemo={onDemo} busy={!!busy || !!lineageStatus} status={status} />}
-        {mode !== 'home' && status}
-        <Suspense fallback={<Progress value={0.3} label="Loading view…" />}>
-        {mode === 'spark' && (runs.length ? <SparkView runs={runs} onSwap={() => setRuns(([a, b]) => [b, a])} /> : <Empty>Drop a Spark event log anywhere on the page, or load the demo from the home screen.</Empty>)}
-        {mode === 'lineage' &&
-          (lineage ? (
-            <LineageView result={lineage} files={files} dialect={dialect} busy={!!lineageStatus} onFilesChange={(f, d) => (setFiles(f), setDialect(d))} onAnalyze={reanalyse} />
-          ) : (
-            <Empty>{lineageStatus ? 'Analysing your SQL…' : 'Drop .sql files or a dbt manifest.json anywhere on the page, or load the demo from the home screen.'}</Empty>
-          ))}
-        {mode === 'map' &&
-          (lineage && runs.length ? (
-            <PipelineMap lineage={lineage} runs={runs} />
-          ) : (
-            <Empty>
-              The pipeline map needs both a Spark event log and the SQL that the run executed. {!runs.length && 'No Spark log loaded yet. '}
-              {!lineage && 'No SQL loaded yet. '}
-              <button className="btn small" onClick={onDemo} disabled={!!busy || !!lineageStatus}>Load the demo pipeline</button>
-            </Empty>
-          ))}
-        </Suspense>
+        <div className="view-enter" key={mode}>
+          {mode === 'home' && <Landing onFiles={onFiles} onDemo={onDemo} busy={!!busy || !!lineageStatus} status={status} />}
+          {mode !== 'home' && status}
+          <Suspense fallback={<Progress value={0.3} label="Loading view…" />}>
+            {mode === 'spark' && (runs.length ? <SparkView runs={runs} onSwap={() => setRuns(([a, b]) => [b, a])} /> : <Empty>Drop a Spark event log anywhere on the page, or load the demo from the home screen.</Empty>)}
+            {mode === 'lineage' &&
+              (lineage ? (
+                <LineageView result={lineage} files={files} dialect={dialect} busy={!!lineageStatus} onFilesChange={(f, d) => (setFiles(f), setDialect(d))} onAnalyze={reanalyse} />
+              ) : (
+                <Empty>{lineageStatus ? 'Analysing your SQL…' : 'Drop .sql files or a dbt manifest.json anywhere on the page, or load the demo from the home screen.'}</Empty>
+              ))}
+            {mode === 'map' &&
+              (lineage && runs.length ? (
+                <PipelineMap lineage={lineage} runs={runs} />
+              ) : (
+                <Empty>
+                  The pipeline map needs both a Spark event log and the SQL that the run executed. {!runs.length && 'No Spark log loaded yet. '}
+                  {!lineage && 'No SQL loaded yet. '}
+                  <button className="btn small" onClick={onDemo} disabled={!!busy || !!lineageStatus}>Load the demo pipeline</button>
+                </Empty>
+              ))}
+          </Suspense>
+        </div>
       </main>
       <footer className="footer">PipeScope · Spark event-log analysis and SQL lineage, in the browser · built by Aditya Malviya</footer>
     </div>
