@@ -163,7 +163,7 @@ export default function App() {
     <div className={`app mode-${mode}`}>
       <div className="workspace">
         <header className="topbar">
-          <button className="mobile-brand" onClick={() => setMode('home')} aria-label="PipeScope home"><img src="./favicon.svg" width="22" height="22" alt="" aria-hidden="true" />PipeScope</button>
+          <button className="mobile-brand" onClick={() => setMode('home')} aria-label="PipeScope home"><img src="./pipescope-icon.svg" width="22" height="22" alt="" aria-hidden="true" />PipeScope</button>
           <nav className="editorial-nav" aria-label="Main navigation">
             {modes.map((m) => <button key={m.id} className={mode === m.id ? 'active' : ''} aria-current={mode === m.id ? 'page' : undefined} onClick={() => setMode(m.id)}>{m.label}</button>)}
           </nav>
@@ -205,7 +205,7 @@ export default function App() {
         </div>
         </main>
         <footer className="editorial-footer">
-          <div><button className="footer-brand" onClick={() => setMode('home')}><img src="./favicon.svg" width="26" height="26" alt="" />PipeScope <small>v1.4</small></button><p>Understand your pipelines.<br />Spark diagnostics and column-level SQL lineage, entirely in your browser.</p><span className="footer-privacy">● Your files stay in this browser.</span></div>
+          <div><button className="footer-brand" onClick={() => setMode('home')}><img src="./pipescope-icon.svg" width="26" height="26" alt="" />PipeScope <small>v1.4</small></button><p>Understand your pipelines.<br />Spark diagnostics and column-level SQL lineage, entirely in your browser.</p><span className="footer-privacy">● Your files stay in this browser.</span></div>
           <div><span>Analyzers</span><button onClick={() => setMode('spark')}>Spark Doctor</button><button onClick={() => setMode('lineage')}>Lineage Explorer</button><button onClick={() => setMode('map')}>Pipeline Map</button></div>
           <div><span>Architecture</span><button onClick={() => setMode('docs')}>Browser engine</button><button onClick={() => setMode('docs')}>Event log recipes</button><button onClick={() => setMode('docs')}>Security &amp; privacy</button></div>
           <div><span>Project</span><a href="https://github.com/adityamalviya04692/pipescope" target="_blank" rel="noreferrer">GitHub repository ↗</a><a href="https://github.com/adityamalviya04692/pipescope/blob/main/LICENSE" target="_blank" rel="noreferrer">MIT license ↗</a><p>Built by Aditya Malviya</p></div>
