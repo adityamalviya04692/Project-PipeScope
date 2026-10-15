@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import Landing from './components/Landing';
+import Documentation from './components/Documentation';
 import { Empty, Progress } from './components/ui';
 import { analyzeLineage, loadSampleSql } from './lineage/client';
 import type { LineageResult, SqlFile } from './lineage/types';
@@ -11,14 +12,7 @@ const SparkView = lazy(() => import('./views/spark/SparkView'));
 const LineageView = lazy(() => import('./views/lineage/LineageView'));
 const PipelineMap = lazy(() => import('./views/map/PipelineMap'));
 
-type Mode = 'home' | 'spark' | 'lineage' | 'map';
-
-function ModeIcon({ mode }: { mode: Mode }) {
-  if (mode === 'home') return <path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z" />;
-  if (mode === 'spark') return <path d="m13 2-9 12h7l-1 8 9-12h-7l1-8Z" />;
-  if (mode === 'lineage') return <><circle cx="5" cy="12" r="2" /><circle cx="19" cy="5" r="2" /><circle cx="19" cy="19" r="2" /><path d="m7 11 10-5M7 13l10 5" /></>;
-  return <><circle cx="5" cy="5" r="2" /><circle cx="5" cy="19" r="2" /><circle cx="19" cy="12" r="2" /><path d="M7 5h4a3 3 0 0 1 3 3v1a3 3 0 0 0 3 3M7 19h4a3 3 0 0 0 3-3v-1" /></>;
-}
+type Mode = 'home' | 'spark' | 'lineage' | 'map' | 'docs';
 
 interface Busy {
   label: string;
@@ -38,6 +32,10 @@ export default function App() {
   const [files, setFiles] = useState<SqlFile[]>([]);
   const [dialect, setDialect] = useState('databricks');
   const [lineageStatus, setLineageStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [mode]);
 
   // ------------------------------------------------------------ Spark
   const ingestSpark = useCallback(async (items: { blob: Blob; name: string }[], replace = false) => {
@@ -158,52 +156,17 @@ export default function App() {
     { id: 'spark', label: 'Spark Doctor', ready: runs.length > 0 },
     { id: 'lineage', label: 'Lineage Explorer', ready: !!lineage },
     { id: 'map', label: 'Pipeline map', ready: !!lineage && runs.length > 0 },
+    { id: 'docs', label: 'Documentation', ready: true },
   ];
 
-  const loadedTarget = runs.length ? runs[runs.length - 1].run.fileName : lineage ? `${lineage.stats.tables} table lineage` : 'No dataset loaded';
-
   return (
-    <div className="app">
-      <aside className="sidebar">
-        <button className="brand" onClick={() => setMode('home')} aria-label="PipeScope home">
-          <img className="logo-mark" src="./favicon.svg" width="28" height="28" alt="" aria-hidden="true" />
-          <span>PipeScope</span>
-          <span className="version">v1.4</span>
-        </button>
-
-        <div className="target-card">
-          <span className="target-label">Active workspace</span>
-          <strong title={loadedTarget}>{loadedTarget}</strong>
-          <span className={runs.length || lineage ? 'target-ready' : 'target-idle'}>
-            <i />{runs.length || lineage ? 'Loaded in browser memory' : 'Load files or explore the demo'}
-          </span>
-        </div>
-
-        <div className="nav-group">
-          <span className="nav-label">Modules &amp; views</span>
-          <nav className="modes" aria-label="Views">
-          {modes.map((m) => (
-            <button key={m.id} className={mode === m.id ? 'active' : ''} onClick={() => setMode(m.id)} aria-current={mode === m.id ? 'page' : undefined}>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><ModeIcon mode={m.id} /></svg>
-              {m.label}
-              {m.ready && m.id !== 'home' && <span className="dot" aria-hidden="true" />}
-            </button>
-          ))}
-          </nav>
-        </div>
-
-        <div className="sidebar-foot">
-          <div className="privacy-panel">
-            <span>▣ 100% client-side engine</span>
-            <p>Data never leaves your browser sandbox.</p>
-          </div>
-          <span>PipeScope · built by Aditya Malviya</span>
-        </div>
-      </aside>
-
+    <div className={`app mode-${mode}`}>
       <div className="workspace">
         <header className="topbar">
           <button className="mobile-brand" onClick={() => setMode('home')} aria-label="PipeScope home"><img src="./favicon.svg" width="22" height="22" alt="" aria-hidden="true" />PipeScope</button>
+          <nav className="editorial-nav" aria-label="Main navigation">
+            {modes.map((m) => <button key={m.id} className={mode === m.id ? 'active' : ''} aria-current={mode === m.id ? 'page' : undefined} onClick={() => setMode(m.id)}>{m.label}</button>)}
+          </nav>
           <span className="privacy" title="Event logs and SQL are processed inside this browser tab. Nothing is uploaded.">
             <i />
             <span>runs in your browser</span>
@@ -212,11 +175,13 @@ export default function App() {
           </span>
           <span className="spacer" />
           <a className="github-button" href="https://github.com/adityamalviya04692/pipescope" target="_blank" rel="noreferrer">GitHub ↗</a>
+          <button className="btn header-demo" onClick={onDemo} disabled={!!busy || !!lineageStatus}>Explore demo ↗</button>
         </header>
 
         <main className="main">
         <div className="view-enter" key={mode}>
           {mode === 'home' && <Landing onFiles={onFiles} onDemo={onDemo} busy={!!busy || !!lineageStatus} status={status} />}
+          {mode === 'docs' && <Documentation onDemo={onDemo} busy={!!busy || !!lineageStatus} />}
           {mode !== 'home' && status}
           <Suspense fallback={<Progress value={0.3} label="Loading view…" />}>
             {mode === 'spark' && (runs.length ? <SparkView runs={runs} onSwap={() => setRuns(([a, b]) => [b, a])} /> : <Empty>Drop a Spark event log anywhere on the page, or load the demo from the home screen.</Empty>)}
@@ -239,7 +204,12 @@ export default function App() {
           </Suspense>
         </div>
         </main>
-        <footer className="footer"><span>PipeScope · Spark event-log analysis and SQL lineage, in the browser</span><b>WASM Active</b></footer>
+        <footer className="editorial-footer">
+          <div><button className="footer-brand" onClick={() => setMode('home')}><img src="./favicon.svg" width="26" height="26" alt="" />PipeScope <small>v1.4</small></button><p>Understand your pipelines.<br />Spark diagnostics and column-level SQL lineage, entirely in your browser.</p><span className="footer-privacy">● Your files stay in this browser.</span></div>
+          <div><span>Analyzers</span><button onClick={() => setMode('spark')}>Spark Doctor</button><button onClick={() => setMode('lineage')}>Lineage Explorer</button><button onClick={() => setMode('map')}>Pipeline Map</button></div>
+          <div><span>Architecture</span><button onClick={() => setMode('docs')}>Browser engine</button><button onClick={() => setMode('docs')}>Event log recipes</button><button onClick={() => setMode('docs')}>Security &amp; privacy</button></div>
+          <div><span>Project</span><a href="https://github.com/adityamalviya04692/pipescope" target="_blank" rel="noreferrer">GitHub repository ↗</a><a href="https://github.com/adityamalviya04692/pipescope/blob/main/LICENSE" target="_blank" rel="noreferrer">MIT license ↗</a><p>Built by Aditya Malviya</p></div>
+        </footer>
       </div>
     </div>
   );

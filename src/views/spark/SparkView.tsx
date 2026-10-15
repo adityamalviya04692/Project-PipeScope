@@ -45,9 +45,9 @@ export default function SparkView({ runs, onSwap }: { runs: Analysis[]; onSwap: 
       <div className="view-head">
         <div>
           <div className="view-eyebrows"><span>Heuristic engine</span><b>● {a.findings.length} diagnostics computed</b></div>
-          <h2>Spark Doctor · {a.summary.appName}</h2>
+          <h2>Spark Doctor: isolate <em>skew, memory spill,</em> and silent executor waste.</h2>
           <p className="meta">
-            Hotspot and stage execution audit · {a.summary.appId} · {runLabel(a)} · {fmtDuration(a.summary.duration)} · Spark {a.summary.sparkVersion}
+            {a.summary.appName} · {a.summary.appId} · {runLabel(a)} · {fmtDuration(a.summary.duration)} · Spark {a.summary.sparkVersion}
           </p>
         </div>
         {runs.length > 1 && (

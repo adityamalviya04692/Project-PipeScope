@@ -10,6 +10,7 @@ import SidePanel from '../lineage/SidePanel';
 
 export default function PipelineMap({ lineage, runs }: { lineage: LineageResult; runs: Analysis[] }) {
   const [runIdx, setRunIdx] = useState(0);
+  const [visual, setVisual] = useState<'timeline' | 'graph'>('timeline');
   const a = runs[Math.min(runIdx, runs.length - 1)];
   const ix = useMemo(() => buildIndex(lineage), [lineage]);
   const tr = useMemo(() => runsByTable(a), [a]);
@@ -27,7 +28,7 @@ export default function PipelineMap({ lineage, runs }: { lineage: LineageResult;
       <div className="view-head">
         <div>
           <div className="view-eyebrows"><span>Lineage-correlated profiler</span><b>● Runtime overlay active</b></div>
-          <h2>Pipeline map · end-to-end orchestration</h2>
+          <h2>Pipeline Map: connect <em>execution cost directly</em> to data dependencies.</h2>
           <p className="meta">Spark runtime from {a.run.fileName} laid over the lineage of {lineage.stats.tables} tables. Click a table to see its build time and findings.</p>
         </div>
         {runs.length > 1 && (
@@ -72,7 +73,19 @@ export default function PipelineMap({ lineage, runs }: { lineage: LineageResult;
       )}
 
       <div className="lineage-layout">
-        <LineageGraph ix={ix} selection={selection} onSelect={setSelection} runs={tr} defaultShowColumns={false} height={720} />
+        <div className="stack">
+          <div className="card-head"><div><span className="section-kicker">Execution topology</span><h3>Critical execution path &amp; allocation</h3></div><Segmented label="Pipeline visualization" value={visual} onChange={setVisual} options={[{ id: 'timeline', label: 'Execution waterfall' }, { id: 'graph', label: 'DAG graph' }]} /></div>
+          {visual === 'graph' ? <LineageGraph ix={ix} selection={selection} onSelect={setSelection} runs={tr} defaultShowColumns={false} height={720} /> : <div className="execution-waterfall">
+            <div className="waterfall-axis"><span>Table / SQL execution</span><div>{[0, .25, .5, .75, 1].map((fraction) => <span key={fraction}>{fmtDuration(a.summary.duration * fraction)}</span>)}</div></div>
+            {[...a.sql].filter((q) => q.target && ix.tables.has(q.target)).sort((x, y) => x.start - y.start).map((q) => {
+              const runtime = tr.get(q.target!);
+              const start = Math.max(0, Math.min(100, (q.start - a.summary.start) / Math.max(1, a.summary.duration) * 100));
+              const width = Math.min(100 - start, Math.max(.5, q.duration / Math.max(1, a.summary.duration) * 100));
+              return <button key={q.id} className={`waterfall-row ${runtime?.severity ?? ''}${selection.kind === 'table' && selection.table === q.target ? ' selected' : ''}`} onClick={() => setSelection({ kind: 'table', table: q.target! })} title={`${displayName(q.target!)} · ${fmtDuration(q.duration)} · click to inspect`}><span className="waterfall-label">{displayName(q.target!)}<small>{q.stageKeys.length} stages · {runtime?.findings.length ?? 0} findings</small></span><span className="waterfall-track"><span className="waterfall-bar" style={{ left: `${start}%`, width: `${width}%` }} /></span><span className="waterfall-duration">{fmtDuration(q.duration)}</span></button>;
+            })}
+            <p className="small muted">Elapsed wall-clock time from the selected Spark run. Select a build to inspect its findings and dependencies.</p>
+          </div>}
+        </div>
         {selection.kind === 'none' ? (
           <aside className="side">
             <Card title="Build time by table" hint="Sorted by wall-clock time. 'Blocks' counts the tables downstream that wait for it.">
