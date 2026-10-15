@@ -166,14 +166,7 @@ export default function App() {
     <div className="app">
       <aside className="sidebar">
         <button className="brand" onClick={() => setMode('home')} aria-label="PipeScope home">
-          <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
-            <rect width="32" height="32" rx="9" fill="var(--surface-3)" />
-            <circle cx="8" cy="16" r="3" fill="var(--c2)" />
-            <circle cx="16" cy="8" r="3" fill="var(--accent)" />
-            <circle cx="24" cy="16" r="3" fill="var(--good)" />
-            <circle cx="16" cy="24" r="3" fill="var(--c4)" />
-            <path d="m10.5 14.5 3-4m5 0 3 4m0 3-3 4m-5 0-3-4" stroke="var(--text-muted)" strokeWidth="1.5" />
-          </svg>
+          <img className="logo-mark" src="./favicon.svg" width="28" height="28" alt="" aria-hidden="true" />
           <span>PipeScope</span>
           <span className="version">v1.4</span>
         </button>
@@ -210,7 +203,7 @@ export default function App() {
 
       <div className="workspace">
         <header className="topbar">
-          <button className="mobile-brand" onClick={() => setMode('home')} aria-label="PipeScope home">PipeScope</button>
+          <button className="mobile-brand" onClick={() => setMode('home')} aria-label="PipeScope home"><img src="./favicon.svg" width="22" height="22" alt="" aria-hidden="true" />PipeScope</button>
           <span className="privacy" title="Event logs and SQL are processed inside this browser tab. Nothing is uploaded.">
             <i />
             <span>runs in your browser</span>
