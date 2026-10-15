@@ -67,6 +67,14 @@ const LineageIcon = (
 export default function Landing({ onFiles, onDemo, busy, status }: { onFiles: (f: File[]) => void; onDemo: () => void; busy: boolean; status: ReactNode }) {
   return (
     <div className="landing">
+      <section className="isolation-banner">
+        <span className="isolation-icon" aria-hidden="true">▣</span>
+        <div>
+          <h3>Client-side isolation active <span>Zero cloud egress</span></h3>
+          <p>Event logs and SQL stay inside this browser tab while Web Workers and Pyodide run the analysis.</p>
+        </div>
+        <div className="isolation-status"><b>● Pyodide WASM</b><b>⚙ Workers ready</b></div>
+      </section>
       <section className="hero">
         <span className="eyebrow">Spark diagnostics · SQL graph lineage</span>
         <h1>See why your pipeline is slow, and what it feeds.</h1>

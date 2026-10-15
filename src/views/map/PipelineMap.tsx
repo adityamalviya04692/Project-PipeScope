@@ -26,7 +26,8 @@ export default function PipelineMap({ lineage, runs }: { lineage: LineageResult;
     <div className="stack">
       <div className="view-head">
         <div>
-          <h2>Pipeline map</h2>
+          <div className="view-eyebrows"><span>Lineage-correlated profiler</span><b>● Runtime overlay active</b></div>
+          <h2>Pipeline map · end-to-end orchestration</h2>
           <p className="meta">Spark runtime from {a.run.fileName} laid over the lineage of {lineage.stats.tables} tables. Click a table to see its build time and findings.</p>
         </div>
         {runs.length > 1 && (
@@ -42,7 +43,7 @@ export default function PipelineMap({ lineage, runs }: { lineage: LineageResult;
         )}
       </div>
 
-      <div className="kpis">
+      <div className="kpis pipeline-kpis">
         <Kpi label="Models matched" value={`${cov.matched.length} / ${models}`} sub={cov.runOnly.length ? `${cov.runOnly.length} written tables not in the SQL` : 'every built table found in lineage'} tone={cov.matched.length === models ? 'good' : 'warning'} />
         <Kpi label="Run wall-clock" value={fmtDuration(a.summary.duration)} sub={runLabel(a)} />
         <Kpi label="Critical path" value={fmtDuration(cp.totalMs)} sub={`${cp.path.length} dependent builds`} tone={cp.totalMs > a.summary.duration * 0.5 ? 'warning' : ''} />

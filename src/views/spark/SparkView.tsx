@@ -44,9 +44,10 @@ export default function SparkView({ runs, onSwap }: { runs: Analysis[]; onSwap: 
     <div className="stack">
       <div className="view-head">
         <div>
-          <h2>{a.summary.appName}</h2>
+          <div className="view-eyebrows"><span>Heuristic engine</span><b>● {a.findings.length} diagnostics computed</b></div>
+          <h2>Spark Doctor · {a.summary.appName}</h2>
           <p className="meta">
-            {a.summary.appId} · {runLabel(a)} · {fmtDuration(a.summary.duration)} · Spark {a.summary.sparkVersion}
+            Hotspot and stage execution audit · {a.summary.appId} · {runLabel(a)} · {fmtDuration(a.summary.duration)} · Spark {a.summary.sparkVersion}
           </p>
         </div>
         {runs.length > 1 && (

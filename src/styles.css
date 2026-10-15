@@ -174,6 +174,13 @@ button.chip:hover { border-color: var(--accent); color: var(--accent); }
 
 /* ---------- landing ---------- */
 .landing { max-width: 1180px; margin: 0 auto; padding: 12px 0 8px; display: flex; flex-direction: column; gap: 22px; }
+.isolation-banner { display: flex; align-items: center; gap: 14px; padding: 15px 17px; background: linear-gradient(110deg, var(--surface), rgba(24, 52, 63, .82)); border: 1px solid var(--border); border-radius: 14px; }
+.isolation-icon { display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 9px; color: var(--good); background: var(--good-bg); font-size: 18px; }
+.isolation-banner h3 { font-size: 15px; }
+.isolation-banner h3 span { margin-left: 7px; padding: 2px 7px; border-radius: 99px; background: var(--good-bg); color: var(--good); font: 700 9px/1.5 Inter, sans-serif; letter-spacing: .05em; text-transform: uppercase; }
+.isolation-banner p { color: var(--text-muted); font-size: 12px; }
+.isolation-status { margin-left: auto; display: flex; gap: 8px; }
+.isolation-status b { padding: 7px 9px; border-radius: 8px; background: rgba(8, 13, 21, .34); color: var(--accent); font-size: 10.5px; white-space: nowrap; }
 .hero { position: relative; overflow: hidden; text-align: left; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; padding: 28px; background: linear-gradient(115deg, rgba(17,24,39,.96), rgba(22,47,58,.86)); border: 1px solid var(--border); border-radius: 16px; }
 .hero::after { content: ''; position: absolute; width: 280px; height: 280px; right: -100px; top: -130px; background: rgba(76,215,246,.12); filter: blur(55px); border-radius: 50%; pointer-events: none; }
 .eyebrow { color: var(--accent); background: var(--accent-soft); padding: 4px 9px; border-radius: 99px; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
@@ -195,10 +202,17 @@ button.chip:hover { border-color: var(--accent); color: var(--accent); }
 .view-head { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-end; justify-content: space-between; padding: 20px; background: linear-gradient(110deg, rgba(17,24,39,.95), rgba(24,52,63,.78)); border: 1px solid var(--border); border-radius: 14px; }
 .view-head h2 { display: flex; align-items: center; gap: 10px; }
 .view-head .meta { color: var(--text-muted); font-size: 13px; }
+.view-eyebrows { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-bottom: 6px; }
+.view-eyebrows span { padding: 3px 8px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); font-size: 9.5px; font-weight: 800; letter-spacing: .065em; text-transform: uppercase; }
+.view-eyebrows b { color: var(--good); font-size: 10.5px; font-weight: 600; }
 .subtabs { position: sticky; top: calc(var(--topbar-h) + 8px); z-index: 10; align-self: flex-start; }
 
 /* ---------- score ---------- */
 .score-card { display: flex; flex-wrap: wrap; gap: 20px 28px; align-items: center; }
+.audit-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pipeline-kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.overview-workspace { display: grid; grid-template-columns: minmax(0, 7fr) minmax(340px, 5fr); gap: 16px; align-items: start; }
+.findings-panel { max-height: calc(100vh - var(--topbar-h) - 42px); overflow: auto; }
 .ring-track { fill: none; stroke: var(--surface-3); stroke-width: 9; }
 .ring-value { fill: none; stroke-width: 9; stroke-linecap: round; transition: stroke-dasharray 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
 .ring.good .ring-value { stroke: var(--good); }
@@ -345,6 +359,10 @@ button.chip:hover { border-color: var(--accent); color: var(--accent); }
 @media (max-width: 1240px) {
   .lineage-layout { grid-template-columns: 1fr; }
   .side { position: static; max-height: none; }
+  .overview-workspace { grid-template-columns: 1fr; }
+  .findings-panel { max-height: none; }
+  .audit-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pipeline-kpis { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
 }
 @media (max-width: 860px) {
   .app { display: block; }
@@ -363,11 +381,15 @@ button.chip:hover { border-color: var(--accent); color: var(--accent); }
   .main { padding: 14px; }
   .graph { height: 520px; }
   .hero { padding: 22px; }
+  .isolation-status { display: none; }
 }
 @media (max-width: 560px) {
   .privacy .runtime, .privacy b { display: none; }
   .github-button { padding: 6px 8px; }
   .demo-cta { align-items: flex-start; flex-direction: column; }
+  .isolation-banner { align-items: flex-start; }
+  .isolation-banner h3 span { display: block; width: max-content; margin: 5px 0 0; }
+  .audit-kpis { grid-template-columns: 1fr 1fr; }
   .footer span { display: none; }
   .footer { justify-content: flex-end; }
 }

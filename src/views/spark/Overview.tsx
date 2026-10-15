@@ -136,7 +136,7 @@ export default function Overview({ a, onOpenStage, onOpenSql }: { a: Analysis; o
 
   return (
     <div className="stack">
-      <div className="kpis">
+      <div className="kpis audit-kpis">
         <Kpi label="Wall-clock" value={fmtDuration(s.duration)} sub={`${fmtNum(s.jobs)} jobs · ${fmtNum(s.stages)} stages`} />
         <Kpi label="Tasks" value={fmtNum(s.tasks)} sub={s.failedTasks ? `${s.failedTasks} failed attempts` : 'no failures'} tone={s.failedTasks ? 'warning' : ''} />
         <Kpi label="Executors" value={fmtNum(s.executors)} sub={`peak ${s.peakCores} cores`} />
@@ -147,50 +147,39 @@ export default function Overview({ a, onOpenStage, onOpenSql }: { a: Analysis; o
         <Kpi label="GC" value={fmtPct(s.gcRatio, 1)} sub="of executor run time" tone={s.gcRatio > 0.1 ? 'warning' : 'good'} />
       </div>
 
-      <div className="grid-2">
-        <Card title="Run health" hint="100 minus a penalty per finding (critical 15, warning 6, note 2; capped per rule).">
-          <div className="score-card">
-            <ScoreRing score={a.score} grade={a.grade} />
-            <div className="stack" style={{ gap: 10, flex: 1, minWidth: 220 }}>
-              <p>
-                <b>{a.findings.length} findings</b> in {fmtDuration(s.duration)} of runtime.
-              </p>
-              <div className="sev-counts">
-                <span className="sev critical">{counts.critical} critical</span>
-                <span className="sev warning">{counts.warning} warning</span>
-                <span className="sev info">{counts.info} notes</span>
+      <div className="overview-workspace">
+        <div className="stack">
+          <Card title="Run health" hint="100 minus a penalty per finding (critical 15, warning 6, note 2; capped per rule).">
+            <div className="score-card">
+              <ScoreRing score={a.score} grade={a.grade} />
+              <div className="stack" style={{ gap: 10, flex: 1, minWidth: 220 }}>
+                <p><b>{a.findings.length} findings</b> in {fmtDuration(s.duration)} of runtime.</p>
+                <div className="sev-counts">
+                  <span className="sev critical">{counts.critical} critical</span>
+                  <span className="sev warning">{counts.warning} warning</span>
+                  <span className="sev info">{counts.info} notes</span>
+                </div>
+                {straggler > 0 && <p className="small">About <b>{fmtDuration(straggler)}</b> ({fmtPct(straggler / s.duration)}) was spent waiting on straggler tasks while other cores sat idle.</p>}
+                <p className="muted small">Spark {s.sparkVersion || '?'} · {a.run.fileName}</p>
               </div>
-              {straggler > 0 && (
-                <p className="small">
-                  About <b>{fmtDuration(straggler)}</b> ({fmtPct(straggler / s.duration)}) was spent waiting on straggler tasks while other cores sat idle.
-                </p>
-              )}
-              <p className="muted small">
-                Spark {s.sparkVersion || '?'} · {a.run.fileName}
-              </p>
             </div>
-          </div>
-        </Card>
-        <Card title="Where the time went" hint="Wall-clock time per SQL statement, coloured by its worst finding. Click a bar to see its stage DAG.">
-          {a.sql.length ? <TimeByTable a={a} onOpenSql={onOpenSql} /> : <p className="muted">No SQL executions in this log.</p>}
+          </Card>
+          <Card title="Where the time went" hint="Wall-clock time per SQL statement, coloured by its worst finding. Click a bar to see its stage DAG.">
+            {a.sql.length ? <TimeByTable a={a} onOpenSql={onOpenSql} /> : <p className="muted">No SQL executions in this log.</p>}
+          </Card>
+          <Card title="Cores in use vs available" hint="Time-weighted running tasks against executor cores. The gap is capacity you paid for but did not use.">
+            <ConcurrencyChart a={a} />
+          </Card>
+        </div>
+
+        <Card className="findings-panel" title={`Critical hotspots & findings (${a.findings.length})`} hint="Sorted by severity, then by estimated time lost. Expand one for evidence and a copyable fix.">
+          {a.findings.length === 0 ? <p className="muted">No problems detected. This run looks healthy.</p> : (
+            <div className="findings">
+              {a.findings.map((f, i) => <FindingCard key={f.id} f={f} a={a} defaultOpen={i < 2} onOpenStage={onOpenStage} />)}
+            </div>
+          )}
         </Card>
       </div>
-
-      <Card title="Cores in use vs available" hint="Time-weighted running tasks against executor cores. The gap is capacity you paid for but did not use.">
-        <ConcurrencyChart a={a} />
-      </Card>
-
-      <Card title={`Findings (${a.findings.length})`} hint="Sorted by severity, then by estimated time lost. Expand one for evidence and a fix you can copy.">
-        {a.findings.length === 0 ? (
-          <p className="muted">No problems detected. This run looks healthy.</p>
-        ) : (
-          <div className="findings">
-            {a.findings.map((f, i) => (
-              <FindingCard key={f.id} f={f} a={a} defaultOpen={i < 2} onOpenStage={onOpenStage} />
-            ))}
-          </div>
-        )}
-      </Card>
     </div>
   );
 }

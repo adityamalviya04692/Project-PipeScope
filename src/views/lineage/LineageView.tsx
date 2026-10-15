@@ -46,7 +46,8 @@ export default function LineageView({ result, files, dialect, busy, onFilesChang
     <div className="stack">
       <div className="view-head">
         <div>
-          <h2>Lineage{result.meta.project ? ` · ${result.meta.project}` : ''}</h2>
+          <div className="view-eyebrows"><span>Lineage engine</span><b>● sqlglot {result.sqlglot} in WASM</b></div>
+          <h2>Interactive column-level lineage{result.meta.project ? ` · ${result.meta.project}` : ''}</h2>
           <p className="meta">
             {result.stats.tables} tables · {result.stats.columns} columns · {result.stats.column_edges} column edges · {result.dialect} · parsed in {Math.round(result.stats.elapsed_ms)} ms by sqlglot {result.sqlglot}
           </p>
