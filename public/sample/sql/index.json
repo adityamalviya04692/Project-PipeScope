@@ -1,0 +1,14 @@
+[
+  "00_bronze_sources.sql",
+  "10_silver_orders.sql",
+  "11_silver_order_items.sql",
+  "12_silver_customers.sql",
+  "13_silver_products.sql",
+  "14_silver_payments.sql",
+  "20_gold_fct_order_items.sql",
+  "21_gold_fct_orders.sql",
+  "22_gold_dim_customers.sql",
+  "30_gold_mart_daily_revenue.sql",
+  "31_gold_mart_customer_ltv.sql",
+  "40_reporting_views.sql"
+]

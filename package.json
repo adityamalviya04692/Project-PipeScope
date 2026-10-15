@@ -1,0 +1,40 @@
+{
+  "name": "pipescope",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Diagnose Spark jobs and trace column-level data lineage, entirely in the browser.",
+  "author": "Aditya Malviya",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "vendor": "node scripts/vendor-pyodide.mjs",
+    "predev": "npm run vendor",
+    "dev": "vite",
+    "prebuild": "npm run vendor",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:py": "python3 -m pytest -q tests/python",
+    "samples": "node scripts/generate-eventlogs.mjs"
+  },
+  "dependencies": {
+    "@codemirror/lang-sql": "^6.10.0",
+    "@codemirror/state": "^6.7.6",
+    "@dagrejs/dagre": "^3.1.1",
+    "@xyflow/react": "^12.12.0",
+    "codemirror": "^6.0.2",
+    "echarts": "^6.1.0",
+    "pyodide": "314.0.7",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.4"
+  }
+}
