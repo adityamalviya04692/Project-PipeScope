@@ -13,6 +13,13 @@ const PipelineMap = lazy(() => import('./views/map/PipelineMap'));
 
 type Mode = 'home' | 'spark' | 'lineage' | 'map';
 
+function ModeIcon({ mode }: { mode: Mode }) {
+  if (mode === 'home') return <path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z" />;
+  if (mode === 'spark') return <path d="m13 2-9 12h7l-1 8 9-12h-7l1-8Z" />;
+  if (mode === 'lineage') return <><circle cx="5" cy="12" r="2" /><circle cx="19" cy="5" r="2" /><circle cx="19" cy="19" r="2" /><path d="m7 11 10-5M7 13l10 5" /></>;
+  return <><circle cx="5" cy="5" r="2" /><circle cx="5" cy="19" r="2" /><circle cx="19" cy="12" r="2" /><path d="M7 5h4a3 3 0 0 1 3 3v1a3 3 0 0 0 3 3M7 19h4a3 3 0 0 0 3-3v-1" /></>;
+}
+
 interface Busy {
   label: string;
   progress: number;
@@ -147,41 +154,74 @@ export default function App() {
   );
 
   const modes: { id: Mode; label: string; ready: boolean }[] = [
+    { id: 'home', label: 'Data Hub', ready: true },
     { id: 'spark', label: 'Spark Doctor', ready: runs.length > 0 },
-    { id: 'lineage', label: 'Lineage', ready: !!lineage },
+    { id: 'lineage', label: 'Lineage Explorer', ready: !!lineage },
     { id: 'map', label: 'Pipeline map', ready: !!lineage && runs.length > 0 },
   ];
 
+  const loadedTarget = runs.length ? runs[runs.length - 1].run.fileName : lineage ? `${lineage.stats.tables} table lineage` : 'No dataset loaded';
+
   return (
     <div className="app">
-      <header className="topbar">
+      <aside className="sidebar">
         <button className="brand" onClick={() => setMode('home')} aria-label="PipeScope home">
           <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
-            <rect width="32" height="32" rx="8" fill="var(--accent)" />
-            <circle cx="8" cy="16" r="3" fill="var(--on-accent)" />
-            <circle cx="24" cy="9" r="3" fill="var(--on-accent)" />
-            <circle cx="24" cy="23" r="3" fill="var(--on-accent)" />
-            <path d="M11 15l10-5M11 17l10 5" stroke="var(--on-accent)" strokeWidth="2" />
+            <rect width="32" height="32" rx="9" fill="var(--surface-3)" />
+            <circle cx="8" cy="16" r="3" fill="var(--c2)" />
+            <circle cx="16" cy="8" r="3" fill="var(--accent)" />
+            <circle cx="24" cy="16" r="3" fill="var(--good)" />
+            <circle cx="16" cy="24" r="3" fill="var(--c4)" />
+            <path d="m10.5 14.5 3-4m5 0 3 4m0 3-3 4m-5 0-3-4" stroke="var(--text-muted)" strokeWidth="1.5" />
           </svg>
           <span>PipeScope</span>
+          <span className="version">v1.4</span>
         </button>
-        <nav className="modes" aria-label="Views">
+
+        <div className="target-card">
+          <span className="target-label">Active workspace</span>
+          <strong title={loadedTarget}>{loadedTarget}</strong>
+          <span className={runs.length || lineage ? 'target-ready' : 'target-idle'}>
+            <i />{runs.length || lineage ? 'Loaded in browser memory' : 'Load files or explore the demo'}
+          </span>
+        </div>
+
+        <div className="nav-group">
+          <span className="nav-label">Modules &amp; views</span>
+          <nav className="modes" aria-label="Views">
           {modes.map((m) => (
             <button key={m.id} className={mode === m.id ? 'active' : ''} onClick={() => setMode(m.id)} aria-current={mode === m.id ? 'page' : undefined}>
-              {m.ready && <span className="dot" aria-hidden="true" />}
+              <svg viewBox="0 0 24 24" aria-hidden="true"><ModeIcon mode={m.id} /></svg>
               {m.label}
+              {m.ready && m.id !== 'home' && <span className="dot" aria-hidden="true" />}
             </button>
           ))}
-        </nav>
-        <span className="spacer" />
-        <span className="privacy" title="Event logs and SQL are processed inside this browser tab. Nothing is uploaded.">
-          <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3Zm-1.2 14.2-3.5-3.5 1.4-1.4 2.1 2.1 4.9-4.9 1.4 1.4-6.3 6.3Z" /></svg>
-          <span>runs in your browser</span>
-        </span>
-        <a className="small gh-link" href="https://github.com/adityamalviya04692/pipescope" target="_blank" rel="noreferrer">GitHub</a>
-      </header>
+          </nav>
+        </div>
 
-      <main className="main">
+        <div className="sidebar-foot">
+          <div className="privacy-panel">
+            <span>▣ 100% client-side engine</span>
+            <p>Data never leaves your browser sandbox.</p>
+          </div>
+          <span>PipeScope · built by Aditya Malviya</span>
+        </div>
+      </aside>
+
+      <div className="workspace">
+        <header className="topbar">
+          <button className="mobile-brand" onClick={() => setMode('home')} aria-label="PipeScope home">PipeScope</button>
+          <span className="privacy" title="Event logs and SQL are processed inside this browser tab. Nothing is uploaded.">
+            <i />
+            <span>runs in your browser</span>
+            <b>│</b>
+            <span className="runtime">▣ Pyodide &amp; Web Workers</span>
+          </span>
+          <span className="spacer" />
+          <a className="github-button" href="https://github.com/adityamalviya04692/pipescope" target="_blank" rel="noreferrer">GitHub ↗</a>
+        </header>
+
+        <main className="main">
         <div className="view-enter" key={mode}>
           {mode === 'home' && <Landing onFiles={onFiles} onDemo={onDemo} busy={!!busy || !!lineageStatus} status={status} />}
           {mode !== 'home' && status}
@@ -205,8 +245,9 @@ export default function App() {
               ))}
           </Suspense>
         </div>
-      </main>
-      <footer className="footer">PipeScope · Spark event-log analysis and SQL lineage, in the browser · built by Aditya Malviya</footer>
+        </main>
+        <footer className="footer"><span>PipeScope · Spark event-log analysis and SQL lineage, in the browser</span><b>WASM Active</b></footer>
+      </div>
     </div>
   );
 }

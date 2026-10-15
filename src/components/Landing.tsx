@@ -68,6 +68,7 @@ export default function Landing({ onFiles, onDemo, busy, status }: { onFiles: (f
   return (
     <div className="landing">
       <section className="hero">
+        <span className="eyebrow">Spark diagnostics · SQL graph lineage</span>
         <h1>See why your pipeline is slow, and what it feeds.</h1>
         <p>
           Drop a <b>Spark event log</b> to find skew, spill and wasted cores, with a fix for each. Drop your <b>SQL or dbt project</b> to trace every column from source to dashboard. Put them together to see runtime cost on the lineage graph.
@@ -75,7 +76,7 @@ export default function Landing({ onFiles, onDemo, busy, status }: { onFiles: (f
       </section>
       <div className="demo-cta">
         <button className="btn" onClick={onDemo} disabled={busy}>
-          Explore the demo pipeline
+          <span aria-hidden="true">▶</span> Explore the demo pipeline
         </button>
         <span className="muted small">A nightly orders ETL: two Spark runs (before and after tuning) plus the SQL that built them.</span>
       </div>
